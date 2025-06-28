@@ -2,7 +2,7 @@
 nixPkgs = ["nodejs_18"]
 
 [phases.install]
-cmds = ["npm ci --omit=dev"]
+cmds = ["npm install --omit=dev"]
 
 [phases.build]
 cmds = ["echo 'No build step needed for server'"]
