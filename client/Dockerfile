@@ -1,22 +1,29 @@
-# مرحلة البناء
-FROM node:18-alpine as build
+# استخدام Node.js 20 لدعم React Router 7 و Vite 7
+FROM node:20-alpine
 
+# تعيين مجلد العمل
 WORKDIR /app
+
+# نسخ ملفات package
 COPY package*.json ./
-RUN npm ci
+
+# تثبيت التبعيات
+RUN npm install
+
+# نسخ الكود المصدري
 COPY . .
+
+# بناء التطبيق
 RUN npm run build
 
-# مرحلة الإنتاج
-FROM nginx:alpine
-
-# نسخ الملفات المبنية
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# نسخ إعدادات nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# تثبيت serve لتشغيل التطبيق
+RUN npm install -g serve
 
 # تعيين المنفذ
 EXPOSE 3000
 
-CMD ["nginx", "-g", "daemon off;"] 
+# تعيين متغيرات البيئة
+ENV NODE_ENV=production
+
+# أمر بدء التطبيق
+CMD ["serve", "-s", "dist", "-l", "3000"] 
