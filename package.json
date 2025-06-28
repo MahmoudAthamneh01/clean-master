@@ -20,7 +20,7 @@
     "lint": "npm run lint:client && npm run lint:server",
     "lint:client": "cd client && npm run lint",
     "lint:server": "cd server && npm run lint",
-    "build": "npm run client:build",
+    "build": "echo 'Build not needed for server-only deployment'",
     "start": "npm run server:start",
     "deploy:prepare": "node scripts/deploy.js",
     "deploy:sh": "bash scripts/deploy.sh",
