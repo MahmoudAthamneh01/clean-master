@@ -40,20 +40,29 @@ const LoginPage = () => {
       // Determine role based on email
       const role = adminEmails.includes(formData.email.toLowerCase()) ? 'admin' : 'customer';
       
+      console.log('Attempting login with:', { email: formData.email, role });
+      
       const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/login`, {
         ...formData,
         role
       });
+
+      console.log('Login response:', response.data);
 
       if (response.data.success) {
         // Store token and user info
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         
+        console.log('Stored user data:', response.data.user);
+        console.log('User role:', response.data.user.role);
+        
         // Redirect based on role
         if (response.data.user.role === 'admin') {
+          console.log('Redirecting to admin dashboard...');
           navigate('/admin');
         } else {
+          console.log('Redirecting to profile...');
           navigate('/profile');
         }
       }
