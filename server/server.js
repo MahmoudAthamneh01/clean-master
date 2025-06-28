@@ -1,9 +1,9 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import { testSupabaseConnection } from './config/supabase.js';
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -53,13 +53,14 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
+  const dbStatus = await testSupabaseConnection();
   res.status(200).json({
     status: 'OK',
     message: 'Clean Master API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+    database: dbStatus ? 'Connected' : 'Disconnected'
   });
 });
 
@@ -71,13 +72,14 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Welcome route
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+  const dbStatus = await testSupabaseConnection();
   res.json({
     message: 'Welcome to Clean Master API',
     message_ar: 'مرحباً بك في واجهة برمجة تطبيقات كلين ماستر',
     version: '1.0.0',
     documentation: '/api/docs',
-    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+    database: dbStatus ? 'Connected' : 'Disconnected'
   });
 });
 
@@ -85,22 +87,10 @@ app.get('/', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-// Database connection (non-blocking)
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/cleanmaster');
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error('⚠️  Database connection error:', error.message);
-    console.log('🔄 Server will continue running without database (mock mode)');
-    console.log('📝 Note: Some features may not work without database connection');
-  }
-};
-
-// Start server (always start, regardless of DB connection)
+// Start server with Supabase
 const startServer = async () => {
-  // Try to connect to database, but don't exit if it fails
-  connectDB();
+  // Test Supabase connection
+  const dbConnected = await testSupabaseConnection();
   
   const server = app.listen(PORT, () => {
     console.log(`🚀 Clean Master Server running on port ${PORT}`);
@@ -108,9 +98,12 @@ const startServer = async () => {
     console.log(`🔗 Health check: http://localhost:${PORT}/health`);
     console.log(`🔗 Mock Admin: POST http://localhost:${PORT}/api/auth/mock-admin`);
     
-    if (mongoose.connection.readyState !== 1) {
+    if (!dbConnected) {
       console.log('⚠️  Running in MOCK MODE - Database not connected');
       console.log('🎭 Mock admin available for testing');
+      console.log('📝 Please check your Supabase configuration');
+    } else {
+      console.log('🗄️  Supabase database connected successfully');
     }
   });
 

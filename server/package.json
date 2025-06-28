@@ -9,10 +9,18 @@
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["cleaning", "booking", "api", "nodejs", "express", "mongodb"],
+  "keywords": [
+    "cleaning",
+    "booking",
+    "api",
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
   "author": "Clean Master Team",
   "license": "MIT",
   "dependencies": {
+    "@supabase/supabase-js": "^2.50.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
