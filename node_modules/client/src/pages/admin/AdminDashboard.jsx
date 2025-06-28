@@ -7,12 +7,9 @@ import {
   Users,
   Settings,
   Home,
-  FileText,
   UserCheck,
   TrendingUp,
   Clock,
-  CheckCircle,
-  XCircle,
   Plus,
   Edit,
   Trash2,
@@ -63,7 +60,6 @@ const AdminDashboard = () => {
 
   // Sample data - replace with actual API calls
   useEffect(() => {
-    // Simulate API calls
     setTimeout(() => {
       setBookings([
         {
@@ -295,32 +291,6 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* Filters and Search */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-          <div className="flex items-center space-x-4 rtl:space-x-reverse">
-            <div className="relative">
-              <Search className="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="البحث في الحجوزات..."
-                className="pl-10 rtl:pr-10 rtl:pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
-            <button className="flex items-center space-x-2 rtl:space-x-reverse px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Filter className="w-4 h-4" />
-              <span>تصفية</span>
-            </button>
-          </div>
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <button className="flex items-center space-x-2 rtl:space-x-reverse px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Download className="w-4 h-4" />
-              <span>تصدير</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Bookings Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
@@ -454,7 +424,7 @@ const AdminDashboard = () => {
     </div>
   );
 
-  // Customers Management Component
+  // Customers Management Component  
   const CustomersManagement = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -632,7 +602,6 @@ const AdminDashboard = () => {
             setSelectedItem(null);
           }}
           onSave={(booking) => {
-            // Handle booking save
             console.log('Booking saved:', booking);
             setShowBookingModal(false);
             setSelectedItem(null);
@@ -648,7 +617,6 @@ const AdminDashboard = () => {
             setSelectedItem(null);
           }}
           onSave={(service) => {
-            // Handle service save
             console.log('Service saved:', service);
             setShowServiceModal(false);
             setSelectedItem(null);
@@ -664,7 +632,6 @@ const AdminDashboard = () => {
             setSelectedItem(null);
           }}
           onSave={(customer) => {
-            // Handle customer save
             console.log('Customer saved:', customer);
             setShowCustomerModal(false);
             setSelectedItem(null);
