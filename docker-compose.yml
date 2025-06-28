@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # قاعدة البيانات MongoDB
+  mongodb:
+    image: mongo:7.0
+    container_name: cleanmaster_db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: cleanmaster
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - cleanmaster_network
+
+  # الباك إند API
+  backend:
+    build: ./server
+    container_name: cleanmaster_api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/cleanmaster?authSource=admin
+      JWT_SECRET: cleanmaster_super_secret_key_2024
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    volumes:
+      - ./server/logs:/app/logs
+    networks:
+      - cleanmaster_network
+
+  # الفرونت إند (اختياري للتطوير)
+  frontend:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: cleanmaster_web
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:5000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - cleanmaster_network
+
+volumes:
+  mongodb_data:
+
+networks:
+  cleanmaster_network:
+    driver: bridge 

@@ -1,0 +1,171 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "services": "الخدمات",
+    "booking": "احجز الآن",
+    "contact": "اتصل بنا",
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "profile": "الملف الشخصي",
+    "myBookings": "حجوزاتي",
+    "admin": "لوحة التحكم"
+  },
+  "hero": {
+    "title": "كلين ماستر",
+    "subtitle": "خدمات التنظيف الذكية",
+    "description": "احجز خدمات التنظيف المهنية بسهولة عبر منصتنا الذكية. نوفر أفضل المتخصصين لتنظيف منزلك أو مكتبك",
+    "bookNow": "احجز الآن",
+    "learnMore": "اعرف أكثر",
+    "features": {
+      "professional": "متخصصون محترفون",
+      "fast": "خدمة سريعة",
+      "trusted": "جودة مضمونة",
+      "convenient": "حجز سهل"
+    }
+  },
+  "services": {
+    "title": "خدماتنا",
+    "subtitle": "اختر الخدمة المناسبة لك",
+    "homecleaning": {
+      "title": "تنظيف المنازل",
+      "description": "تنظيف شامل لجميع غرف المنزل",
+      "price": "ريال سعودي"
+    },
+    "officecleaning": {
+      "title": "تنظيف المكاتب",
+      "description": "تنظيف مهني للمكاتب والشركات",
+      "price": "ريال سعودي"
+    },
+    "deepCleaning": {
+      "title": "التنظيف العميق",
+      "description": "تنظيف شامل ومفصل لجميع الزوايا",
+      "price": "ريال سعودي"
+    },
+    "carWash": {
+      "title": "غسيل السيارات",
+      "description": "خدمة غسيل السيارات في المنزل",
+      "price": "ريال سعودي"
+    }
+  },
+  "booking": {
+    "title": "احجز خدمة التنظيف",
+    "step1": "اختر الخدمة",
+    "step2": "حدد التاريخ والوقت",
+    "step3": "أدخل التفاصيل",
+    "step4": "تأكيد الحجز",
+    "serviceType": "نوع الخدمة",
+    "selectService": "اختر الخدمة",
+    "area": "المنطقة",
+    "selectArea": "اختر المنطقة",
+    "date": "التاريخ",
+    "selectDate": "اختر التاريخ",
+    "time": "الوقت",
+    "selectTime": "اختر الوقت",
+    "address": "العنوان",
+    "enterAddress": "أدخل العنوان بالتفصيل",
+    "phone": "رقم الهاتف",
+    "enterPhone": "أدخل رقم الهاتف",
+    "notes": "ملاحظات إضافية",
+    "enterNotes": "أي ملاحظات خاصة",
+    "total": "المجموع",
+    "confirm": "تأكيد الحجز",
+    "back": "السابق",
+    "next": "التالي",
+    "success": "تم إنشاء الحجز بنجاح!",
+    "successMessage": "سيتم التواصل معك قريباً لتأكيد الموعد"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب جديد",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "name": "الاسم الكامل",
+    "phone": "رقم الهاتف",
+    "loginButton": "دخول",
+    "signupButton": "إنشاء حساب",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "backToLogin": "العودة لتسجيل الدخول"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "editProfile": "تعديل الملف الشخصي",
+    "personalInfo": "المعلومات الشخصية",
+    "bookingHistory": "تاريخ الحجوزات",
+    "settings": "الإعدادات",
+    "language": "اللغة",
+    "notifications": "الإشعارات",
+    "save": "حفظ"
+  },
+  "bookings": {
+    "title": "حجوزاتي",
+    "upcoming": "الحجوزات القادمة",
+    "completed": "الحجوزات المكتملة",
+    "cancelled": "الحجوزات الملغية",
+    "status": {
+      "pending": "في الانتظار",
+      "confirmed": "مؤكد",
+      "inProgress": "جاري التنفيذ",
+      "completed": "مكتمل",
+      "cancelled": "ملغي"
+    },
+    "cancel": "إلغاء الحجز",
+    "reschedule": "إعادة جدولة",
+    "viewDetails": "عرض التفاصيل",
+    "rate": "تقييم الخدمة"
+  },
+  "admin": {
+    "dashboard": "لوحة التحكم",
+    "bookings": "الحجوزات",
+    "services": "الخدمات",
+    "users": "المستخدمون",
+    "staff": "الموظفون",
+    "reports": "التقارير",
+    "settings": "الإعدادات",
+    "stats": {
+      "totalBookings": "إجمالي الحجوزات",
+      "todayBookings": "حجوزات اليوم",
+      "revenue": "الإيرادات",
+      "customers": "العملاء"
+    }
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "success": "تم بنجاح",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "save": "حفظ",
+    "search": "بحث",
+    "filter": "تصفية",
+    "export": "تصدير",
+    "print": "طباعة",
+    "close": "إغلاق",
+    "open": "فتح",
+    "yes": "نعم",
+    "no": "لا",
+    "submit": "إرسال"
+  },
+  "contact": {
+    "title": "اتصل بنا",
+    "subtitle": "نحن هنا لمساعدتك",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "address": "العنوان",
+    "workingHours": "ساعات العمل",
+    "sendMessage": "إرسال رسالة",
+    "subject": "الموضوع",
+    "message": "الرسالة"
+  },
+  "whatsapp": {
+    "title": "تواصل عبر واتساب",
+    "description": "راسلنا على واتساب للحجز السريع والاستفسارات",
+    "chatNow": "ابدأ المحادثة"
+  }
+} 

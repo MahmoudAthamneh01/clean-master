@@ -1,0 +1,171 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "booking": "Book Now",
+    "contact": "Contact",
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "profile": "Profile",
+    "myBookings": "My Bookings",
+    "admin": "Admin Panel"
+  },
+  "hero": {
+    "title": "Clean Master",
+    "subtitle": "Smart Cleaning Services",
+    "description": "Book professional cleaning services easily through our smart platform. We provide the best specialists to clean your home or office",
+    "bookNow": "Book Now",
+    "learnMore": "Learn More",
+    "features": {
+      "professional": "Professional Specialists",
+      "fast": "Fast Service",
+      "trusted": "Guaranteed Quality",
+      "convenient": "Easy Booking"
+    }
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Choose the service that suits you",
+    "homecleaning": {
+      "title": "Home Cleaning",
+      "description": "Complete cleaning for all rooms of the house",
+      "price": "SAR"
+    },
+    "officecleaning": {
+      "title": "Office Cleaning",
+      "description": "Professional cleaning for offices and companies",
+      "price": "SAR"
+    },
+    "deepCleaning": {
+      "title": "Deep Cleaning",
+      "description": "Comprehensive and detailed cleaning of all corners",
+      "price": "SAR"
+    },
+    "carWash": {
+      "title": "Car Wash",
+      "description": "Car washing service at home",
+      "price": "SAR"
+    }
+  },
+  "booking": {
+    "title": "Book Cleaning Service",
+    "step1": "Choose Service",
+    "step2": "Select Date & Time",
+    "step3": "Enter Details",
+    "step4": "Confirm Booking",
+    "serviceType": "Service Type",
+    "selectService": "Select Service",
+    "area": "Area",
+    "selectArea": "Select Area",
+    "date": "Date",
+    "selectDate": "Select Date",
+    "time": "Time",
+    "selectTime": "Select Time",
+    "address": "Address",
+    "enterAddress": "Enter detailed address",
+    "phone": "Phone Number",
+    "enterPhone": "Enter phone number",
+    "notes": "Additional Notes",
+    "enterNotes": "Any special notes",
+    "total": "Total",
+    "confirm": "Confirm Booking",
+    "back": "Back",
+    "next": "Next",
+    "success": "Booking created successfully!",
+    "successMessage": "We will contact you soon to confirm the appointment"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Create New Account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "loginButton": "Login",
+    "signupButton": "Create Account",
+    "forgotPassword": "Forgot Password?",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "resetPassword": "Reset Password",
+    "backToLogin": "Back to Login"
+  },
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "personalInfo": "Personal Information",
+    "bookingHistory": "Booking History",
+    "settings": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "save": "Save"
+  },
+  "bookings": {
+    "title": "My Bookings",
+    "upcoming": "Upcoming Bookings",
+    "completed": "Completed Bookings",
+    "cancelled": "Cancelled Bookings",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "cancel": "Cancel Booking",
+    "reschedule": "Reschedule",
+    "viewDetails": "View Details",
+    "rate": "Rate Service"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "bookings": "Bookings",
+    "services": "Services",
+    "users": "Users",
+    "staff": "Staff",
+    "reports": "Reports",
+    "settings": "Settings",
+    "stats": {
+      "totalBookings": "Total Bookings",
+      "todayBookings": "Today's Bookings",
+      "revenue": "Revenue",
+      "customers": "Customers"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "print": "Print",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "submit": "Submit"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We're here to help you",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "workingHours": "Working Hours",
+    "sendMessage": "Send Message",
+    "subject": "Subject",
+    "message": "Message"
+  },
+  "whatsapp": {
+    "title": "Contact via WhatsApp",
+    "description": "Message us on WhatsApp for quick booking and inquiries",
+    "chatNow": "Start Chat"
+  }
+} 

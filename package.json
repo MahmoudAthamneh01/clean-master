@@ -1,0 +1,62 @@
+{
+  "name": "clean-master",
+  "version": "1.0.0",
+  "description": "Smart Cleaning Appointment Platform - Arabic-first booking system with WhatsApp bot integration",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "client:dev": "cd client && npm run dev",
+    "server:dev": "cd server && npm run dev",
+    "client:build": "cd client && npm run build",
+    "client:preview": "cd client && npm run preview",
+    "server:start": "cd server && npm start",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "install:client": "cd client && npm install",
+    "install:server": "cd server && npm install",
+    "clean": "rm -rf node_modules client/node_modules server/node_modules client/dist",
+    "test": "npm run test:client && npm run test:server",
+    "test:client": "cd client && npm test",
+    "test:server": "cd server && npm test",
+    "lint": "npm run lint:client && npm run lint:server",
+    "lint:client": "cd client && npm run lint",
+    "lint:server": "cd server && npm run lint",
+    "build": "npm run client:build",
+    "start": "npm run server:start",
+    "deploy:prepare": "node scripts/deploy.js",
+    "deploy:sh": "bash scripts/deploy.sh",
+    "deploy:ps1": "powershell scripts/deploy.ps1",
+    "docker:start": "docker-compose up --build -d",
+    "docker:stop": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:clean": "docker-compose down -v --rmi all"
+  },
+  "keywords": [
+    "cleaning",
+    "booking",
+    "arabic",
+    "rtl",
+    "saudi",
+    "whatsapp",
+    "react",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "Clean Master Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/clean-master.git"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "workspaces": [
+    "client",
+    "server",
+    "whatsapp-bot"
+  ]
+} 
