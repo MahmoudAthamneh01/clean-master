@@ -16,20 +16,15 @@ const Header = () => {
   // Check if user is logged in on component mount
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
     
-    if (token) {
+    if (token && userData) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        
-        if (payload.id === 'admin123' && payload.role === 'admin') {
-          setUser({
-            id: 'admin123',
-            role: 'admin',
-            name: 'كلين ماستر - الإدارة'
-          });
-        }
+        const user = JSON.parse(userData);
+        setUser(user);
       } catch (error) {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
       }
     }
   }, []);
@@ -42,26 +37,12 @@ const Header = () => {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setIsUserMenuOpen(false);
     navigate('/');
   };
 
-  // Temporary admin login function
-  const handleAdminLogin = async () => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/auth/mock-admin');
-      
-      if (response.data.success) {
-        localStorage.setItem('token', response.data.token);
-        setUser(response.data.user);
-        alert('تم تسجيل دخول المدير بنجاح!');
-        navigate('/admin');
-      }
-    } catch (error) {
-      alert('خطأ في تسجيل دخول المدير');
-      console.error('Admin login error:', error);
-    }
-  };
+
 
   const navLinks = [
     { to: '/', label: t('nav.home') },
@@ -112,17 +93,7 @@ const Header = () => {
               </span>
             </button>
 
-            {/* Temporary Admin Button */}
-            {!user && (
-              <button
-                onClick={handleAdminLogin}
-                className="flex items-center space-x-1 rtl:space-x-reverse bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors duration-200 text-sm"
-                title="دخول الإدارة (مؤقت)"
-              >
-                <Settings className="w-4 h-4" />
-                <span>إدارة</span>
-              </button>
-            )}
+
 
             {/* User Authentication */}
             {user ? (

@@ -106,7 +106,14 @@ router.post('/register', async (req, res, next) => {
 // @access  Public
 router.post('/login', async (req, res, next) => {
   try {
-    const { email, phone, password } = req.body;
+    const { email, phone, password, role } = req.body;
+
+    // Admin emails list
+    const adminEmails = [
+      'admin@cleanmaster.sa',
+      'mahmoud@cleanmaster.sa', 
+      'manager@cleanmaster.sa'
+    ];
 
     // Validate email/phone and password
     if ((!email && !phone) || !password) {
@@ -117,7 +124,40 @@ router.post('/login', async (req, res, next) => {
       });
     }
 
-    // Check for user
+    // For admin emails, use hardcoded credentials
+    if (email && adminEmails.includes(email.toLowerCase())) {
+      // Simple admin authentication (you can make this more secure later)
+      if (password === 'admin123' || password === 'cleanmaster2024') {
+        const token = jwt.sign(
+          { id: 'admin_' + email.split('@')[0], role: 'admin' },
+          process.env.JWT_SECRET || 'clean-master-secret-key-2024',
+          { expiresIn: '30d' }
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: 'Admin login successful',
+          message_ar: 'تم تسجيل دخول المدير بنجاح',
+          token,
+          user: {
+            id: 'admin_' + email.split('@')[0],
+            name: 'مدير كلين ماستر',
+            email: email,
+            phone: '+966501234567',
+            role: 'admin',
+            preferences: { language: 'ar' }
+          }
+        });
+      } else {
+        return res.status(401).json({
+          success: false,
+          error: 'Invalid admin credentials',
+          error_ar: 'بيانات دخول المدير غير صحيحة'
+        });
+      }
+    }
+
+    // Check for regular user in database
     const query = email ? { email } : { phone };
     const user = await User.findOne(query).select('+password');
 
