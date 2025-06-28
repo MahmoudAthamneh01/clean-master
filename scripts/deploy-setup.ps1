@@ -1,88 +1,64 @@
 # Clean Master Deployment Setup Script
-# سكريبت إعداد نشر منصة كلين ماستر
+# PowerShell script to prepare the project for deployment
 
-Write-Host "🚀 إعداد نشر منصة كلين ماستر" -ForegroundColor Green
+Write-Host "🚀 Clean Master - إعداد النشر" -ForegroundColor Green
+Write-Host "=================================" -ForegroundColor Green
 
-# Check if required tools are installed
-Write-Host "📋 فحص الأدوات المطلوبة..." -ForegroundColor Yellow
-
-# Check Git
-if (Get-Command git -ErrorAction SilentlyContinue) {
-    Write-Host "✅ Git مُثبت" -ForegroundColor Green
-} else {
-    Write-Host "❌ Git غير مُثبت - يُرجى تثبيته من https://git-scm.com/" -ForegroundColor Red
+# Check if git is initialized
+if (-not (Test-Path ".git")) {
+    Write-Host "❌ Git غير مهيأ. قم بتهيئة git أولاً:" -ForegroundColor Red
+    Write-Host "git init" -ForegroundColor Yellow
+    Write-Host "git remote add origin YOUR_REPO_URL" -ForegroundColor Yellow
     exit 1
 }
 
-# Check Node.js
-if (Get-Command node -ErrorAction SilentlyContinue) {
-    $nodeVersion = node --version
-    Write-Host "✅ Node.js مُثبت - الإصدار: $nodeVersion" -ForegroundColor Green
+# Check if all files are committed
+$gitStatus = git status --porcelain
+if ($gitStatus) {
+    Write-Host "📝 حفظ التغييرات في git..." -ForegroundColor Yellow
+    git add .
+    git commit -m "Prepare for deployment"
+    git push origin main
+    Write-Host "✅ تم حفظ التغييرات" -ForegroundColor Green
 } else {
-    Write-Host "❌ Node.js غير مُثبت - يُرجى تثبيته من https://nodejs.org/" -ForegroundColor Red
-    exit 1
+    Write-Host "✅ جميع التغييرات محفوظة" -ForegroundColor Green
 }
 
-# Check environment files
-Write-Host "📋 فحص ملفات الإعدادات..." -ForegroundColor Yellow
-
-if (Test-Path "server\.env") {
-    Write-Host "✅ ملف إعدادات الخادم موجود" -ForegroundColor Green
-} else {
-    Write-Host "❌ ملف إعدادات الخادم مفقود - سيتم إنشاؤه" -ForegroundColor Yellow
-    Copy-Item "server\config-template.env" "server\.env"
-    Write-Host "✅ تم إنشاء server\.env من النموذج" -ForegroundColor Green
-}
-
-if (Test-Path "client\.env") {
-    Write-Host "✅ ملف إعدادات العميل موجود" -ForegroundColor Green
-} else {
-    Write-Host "❌ ملف إعدادات العميل مفقود - سيتم إنشاؤه" -ForegroundColor Yellow
-    Copy-Item "client\config-template.env" "client\.env"
-    Write-Host "✅ تم إنشاء client\.env من النموذج" -ForegroundColor Green
-}
-
-# Build and test
-Write-Host "🔨 بناء واختبار المشروع..." -ForegroundColor Yellow
-
-# Install dependencies
-Write-Host "📦 تثبيت المكتبات..." -ForegroundColor Cyan
-npm install
-
-# Test client build
-Write-Host "🎨 اختبار بناء الواجهة الأمامية..." -ForegroundColor Cyan
-Set-Location client
-npm run build
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "✅ بناء الواجهة الأمامية نجح" -ForegroundColor Green
-} else {
-    Write-Host "❌ فشل في بناء الواجهة الأمامية" -ForegroundColor Red
-    Set-Location ..
-    exit 1
-}
-Set-Location ..
-
-# Test server
-Write-Host "⚙️ اختبار الخادم..." -ForegroundColor Cyan
-Set-Location server
-npm install
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "✅ تثبيت مكتبات الخادم نجح" -ForegroundColor Green
-} else {
-    Write-Host "❌ فشل في تثبيت مكتبات الخادم" -ForegroundColor Red
-    Set-Location ..
-    exit 1
-}
-Set-Location ..
+# Display deployment information
+Write-Host ""
+Write-Host "📋 معلومات النشر:" -ForegroundColor Cyan
+Write-Host "==================" -ForegroundColor Cyan
 
 Write-Host ""
-Write-Host "🎉 إعداد النشر مكتمل!" -ForegroundColor Green
+Write-Host "🔧 متغيرات البيئة للخادم (Railway):" -ForegroundColor Yellow
+Write-Host "NODE_ENV=production"
+Write-Host "PORT=5000"
+Write-Host "JWT_SECRET=your-very-long-secret-key-here"
+Write-Host "SUPABASE_URL=https://uexwsyncimsjivrvqwlc.supabase.co"
+Write-Host "SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVleHdzeW5jaW1zaml2cnZxd2xjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExNDAwNDYsImV4cCI6MjA2NjcxNjA0Nn0.1oG29VH4CqK3OTEPuwv8sBUumlNciiDxSOiTLiU9dUY"
+Write-Host "FRONTEND_URL=https://your-vercel-app.vercel.app"
+
 Write-Host ""
-Write-Host "الخطوات التالية:" -ForegroundColor Yellow
-Write-Host "1. أكمل إعداد MongoDB Atlas وحدث MONGODB_URI في server\.env" -ForegroundColor White
-Write-Host "2. ادفع الكود إلى GitHub" -ForegroundColor White
-Write-Host "3. اربط المشروع مع Railway (الخادم)" -ForegroundColor White
-Write-Host "4. اربط المشروع مع Vercel (الواجهة)" -ForegroundColor White
-Write-Host "5. حدث متغيرات البيئة في منصات النشر" -ForegroundColor White
+Write-Host "🎨 متغيرات البيئة للواجهة (Vercel):" -ForegroundColor Yellow
+Write-Host "VITE_API_URL=https://your-railway-app.railway.app"
+
 Write-Host ""
-Write-Host "📚 راجع DEPLOYMENT_GUIDE.md للتفاصيل الكاملة" -ForegroundColor Cyan 
+Write-Host "🔗 روابط النشر:" -ForegroundColor Cyan
+Write-Host "Railway: https://railway.app"
+Write-Host "Vercel: https://vercel.com"
+
+Write-Host ""
+Write-Host "📁 إعدادات البناء:" -ForegroundColor Cyan
+Write-Host "Vercel Framework: Vite"
+Write-Host "Root Directory: client"
+Write-Host "Build Command: npm run build"
+Write-Host "Output Directory: dist"
+
+Write-Host ""
+Write-Host "🔑 بيانات الدخول:" -ForegroundColor Cyan
+Write-Host "Email: admin@cleanmaster.sa"
+Write-Host "Password: admin123"
+
+Write-Host ""
+Write-Host "✅ المشروع جاهز للنشر!" -ForegroundColor Green
+Write-Host "📖 راجع ملف QUICK_DEPLOY.md للتفاصيل" -ForegroundColor Blue 
