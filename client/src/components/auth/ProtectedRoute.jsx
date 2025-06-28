@@ -9,14 +9,9 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     
-    console.log('ProtectedRoute - Token:', token ? 'exists' : 'missing');
-    console.log('ProtectedRoute - User data:', userData);
-    console.log('ProtectedRoute - Require admin:', requireAdmin);
-    
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
-        console.log('ProtectedRoute - Parsed user:', parsedUser);
         setUser(parsedUser);
       } catch (error) {
         console.error('Error parsing user data:', error);
@@ -38,16 +33,13 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   }
 
   if (!user) {
-    console.log('ProtectedRoute - No user, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
   if (requireAdmin && user.role !== 'admin') {
-    console.log('ProtectedRoute - User is not admin, redirecting to home');
     return <Navigate to="/" replace />;
   }
 
-  console.log('ProtectedRoute - Access granted, rendering children');
   return children;
 };
 

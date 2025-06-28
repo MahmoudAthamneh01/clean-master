@@ -94,14 +94,14 @@ const AdminDashboard = () => {
       setServices([
         {
           id: 1,
-          name: 'تنظيف المنزل',
+          name: 'تنظيف المنازل',
           price: 250,
           duration: 120,
           active: true
         },
         {
           id: 2,
-          name: 'تنظيف المكتب',
+          name: 'تنظيف المكاتب',
           price: 400,
           duration: 180,
           active: true
@@ -157,6 +157,70 @@ const AdminDashboard = () => {
       case 'pending': return 'text-yellow-600 bg-yellow-100';
       case 'cancelled': return 'text-red-600 bg-red-100';
       default: return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  // Handle booking save
+  const handleBookingSave = (bookingData) => {
+    if (selectedItem) {
+      // Update existing booking
+      setBookings(prev => prev.map(booking => 
+        booking.id === selectedItem.id ? { ...bookingData, id: selectedItem.id } : booking
+      ));
+    } else {
+      // Add new booking
+      setBookings(prev => [...prev, { ...bookingData, id: Date.now() }]);
+    }
+    setShowBookingModal(false);
+    setSelectedItem(null);
+  };
+
+  // Handle service save
+  const handleServiceSave = (serviceData) => {
+    if (selectedItem) {
+      // Update existing service
+      setServices(prev => prev.map(service => 
+        service.id === selectedItem.id ? { ...serviceData, id: selectedItem.id } : service
+      ));
+    } else {
+      // Add new service
+      setServices(prev => [...prev, { ...serviceData, id: Date.now() }]);
+    }
+    setShowServiceModal(false);
+    setSelectedItem(null);
+  };
+
+  // Handle customer save
+  const handleCustomerSave = (customerData) => {
+    if (selectedItem) {
+      // Update existing customer
+      setCustomers(prev => prev.map(customer => 
+        customer.id === selectedItem.id ? { ...customerData, id: selectedItem.id } : customer
+      ));
+    } else {
+      // Add new customer
+      setCustomers(prev => [...prev, { ...customerData, id: Date.now() }]);
+    }
+    setShowCustomerModal(false);
+    setSelectedItem(null);
+  };
+
+  // Handle delete functions
+  const handleDeleteBooking = (bookingId) => {
+    if (window.confirm('هل أنت متأكد من حذف هذا الحجز؟')) {
+      setBookings(prev => prev.filter(booking => booking.id !== bookingId));
+    }
+  };
+
+  const handleDeleteService = (serviceId) => {
+    if (window.confirm('هل أنت متأكد من حذف هذه الخدمة؟')) {
+      setServices(prev => prev.filter(service => service.id !== serviceId));
+    }
+  };
+
+  const handleDeleteCustomer = (customerId) => {
+    if (window.confirm('هل أنت متأكد من حذف هذا العميل؟')) {
+      setCustomers(prev => prev.filter(customer => customer.id !== customerId));
     }
   };
 
@@ -358,7 +422,12 @@ const AdminDashboard = () => {
                       >
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="text-red-600 hover:text-red-900">
+                      <button
+                        onClick={() => {
+                          handleDeleteBooking(booking.id);
+                        }}
+                        className="text-red-600 hover:text-red-900"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -413,7 +482,12 @@ const AdminDashboard = () => {
                 >
                   <Edit className="w-4 h-4" />
                 </button>
-                <button className="text-red-600 hover:text-red-900">
+                <button
+                  onClick={() => {
+                    handleDeleteService(service.id);
+                  }}
+                  className="text-red-600 hover:text-red-900"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -498,7 +572,12 @@ const AdminDashboard = () => {
                       >
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="text-red-600 hover:text-red-900">
+                      <button
+                        onClick={() => {
+                          handleDeleteCustomer(customer.id);
+                        }}
+                        className="text-red-600 hover:text-red-900"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -601,11 +680,7 @@ const AdminDashboard = () => {
             setShowBookingModal(false);
             setSelectedItem(null);
           }}
-          onSave={(booking) => {
-            console.log('Booking saved:', booking);
-            setShowBookingModal(false);
-            setSelectedItem(null);
-          }}
+          onSave={handleBookingSave}
         />
       )}
 
@@ -616,11 +691,7 @@ const AdminDashboard = () => {
             setShowServiceModal(false);
             setSelectedItem(null);
           }}
-          onSave={(service) => {
-            console.log('Service saved:', service);
-            setShowServiceModal(false);
-            setSelectedItem(null);
-          }}
+          onSave={handleServiceSave}
         />
       )}
 
@@ -631,11 +702,7 @@ const AdminDashboard = () => {
             setShowCustomerModal(false);
             setSelectedItem(null);
           }}
-          onSave={(customer) => {
-            console.log('Customer saved:', customer);
-            setShowCustomerModal(false);
-            setSelectedItem(null);
-          }}
+          onSave={handleCustomerSave}
         />
       )}
     </div>

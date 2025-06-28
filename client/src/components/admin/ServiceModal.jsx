@@ -3,12 +3,13 @@ import { X, Settings, DollarSign, Clock, Save, AlertTriangle } from 'lucide-reac
 
 const ServiceModal = ({ isOpen, onClose, service, mode, onSave, onDelete }) => {
   const [formData, setFormData] = useState({
+    id: '',
     name: '',
     description: '',
     price: '',
     duration: '',
     category: '',
-    isActive: true,
+    active: true,
     features: []
   });
 
@@ -16,24 +17,26 @@ const ServiceModal = ({ isOpen, onClose, service, mode, onSave, onDelete }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
-    if (service && (mode === 'edit' || mode === 'view')) {
+    if (service && mode === 'edit') {
       setFormData({
+        id: service.id || '',
         name: service.name || '',
         description: service.description || '',
         price: service.price || '',
         duration: service.duration || '',
         category: service.category || 'تنظيف',
-        isActive: service.isActive !== undefined ? service.isActive : true,
+        active: service.active !== undefined ? service.active : true,
         features: service.features || []
       });
     } else if (mode === 'add') {
       setFormData({
+        id: `SRV${Date.now()}`,
         name: '',
         description: '',
         price: '',
         duration: '',
         category: 'تنظيف',
-        isActive: true,
+        active: true,
         features: []
       });
     }
@@ -42,17 +45,10 @@ const ServiceModal = ({ isOpen, onClose, service, mode, onSave, onDelete }) => {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     
-    if (type === 'checkbox') {
-      setFormData(prev => ({
-        ...prev,
-        [name]: checked
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -95,12 +91,12 @@ const ServiceModal = ({ isOpen, onClose, service, mode, onSave, onDelete }) => {
       newErrors.description = 'وصف الخدمة مطلوب';
     }
 
-    if (!formData.price.trim()) {
-      newErrors.price = 'السعر مطلوب';
+    if (!formData.price || formData.price <= 0) {
+      newErrors.price = 'السعر مطلوب ويجب أن يكون أكبر من صفر';
     }
 
-    if (!formData.duration.trim()) {
-      newErrors.duration = 'مدة الخدمة مطلوبة';
+    if (!formData.duration || formData.duration <= 0) {
+      newErrors.duration = 'المدة مطلوبة ويجب أن تكون أكبر من صفر';
     }
 
     setErrors(newErrors);
@@ -113,9 +109,8 @@ const ServiceModal = ({ isOpen, onClose, service, mode, onSave, onDelete }) => {
     if (validateForm()) {
       const serviceData = {
         ...formData,
-        id: service?.id || Date.now(),
-        bookings: service?.bookings || 0,
-        revenue: service?.revenue || '0 ريال'
+        price: Number(formData.price),
+        duration: Number(formData.duration)
       };
       
       onSave(serviceData, mode);
@@ -132,11 +127,10 @@ const ServiceModal = ({ isOpen, onClose, service, mode, onSave, onDelete }) => {
 
   const categories = [
     'تنظيف',
-    'تنظيف منازل',
-    'تنظيف مكاتب',
-    'تنظيف سيارات',
-    'تنظيف خاص',
-    'صيانة'
+    'صيانة',
+    'تطهير',
+    'تنظيم',
+    'أخرى'
   ];
 
   if (!isOpen) return null;
@@ -148,14 +142,18 @@ const ServiceModal = ({ isOpen, onClose, service, mode, onSave, onDelete }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div className="flex items-center space-x-3 rtl:space-x-reverse">
-            <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-              <Settings className="w-5 h-5 text-purple-600" />
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <Settings className="w-5 h-5 text-blue-600" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 font-arabic">
-              {mode === 'add' && 'إضافة خدمة جديدة'}
-              {mode === 'edit' && 'تعديل الخدمة'}
-              {mode === 'view' && 'تفاصيل الخدمة'}
-            </h2>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 font-arabic">
+                {mode === 'add' && 'خدمة جديدة'}
+                {mode === 'edit' && 'تعديل الخدمة'}
+              </h2>
+              {formData.id && (
+                <p className="text-sm text-gray-500">{formData.id}</p>
+              )}
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -169,120 +167,24 @@ const ServiceModal = ({ isOpen, onClose, service, mode, onSave, onDelete }) => {
         <div className="p-6">
           <form className="space-y-6">
             
-            {/* Basic Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              {/* Service Name */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
-                  اسم الخدمة *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  disabled={mode === 'view'}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
-                    mode === 'view' ? 'bg-gray-50' : 'bg-white'
-                  } ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
-                  placeholder="مثل: تنظيف منزل شامل"
-                />
-                {errors.name && (
-                  <p className="text-red-500 text-sm mt-1 font-arabic">{errors.name}</p>
-                )}
-              </div>
-
-              {/* Price */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
-                  السعر *
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    disabled={mode === 'view'}
-                    className={`w-full px-4 py-3 pl-10 rtl:pr-10 rtl:pl-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      mode === 'view' ? 'bg-gray-50' : 'bg-white'
-                    } ${errors.price ? 'border-red-500' : 'border-gray-300'}`}
-                    placeholder="150 ريال"
-                  />
-                  <DollarSign className="w-5 h-5 absolute left-3 rtl:right-3 top-3.5 text-gray-400" />
-                </div>
-                {errors.price && (
-                  <p className="text-red-500 text-sm mt-1 font-arabic">{errors.price}</p>
-                )}
-              </div>
-
-              {/* Duration */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
-                  مدة الخدمة *
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="duration"
-                    value={formData.duration}
-                    onChange={handleInputChange}
-                    disabled={mode === 'view'}
-                    className={`w-full px-4 py-3 pl-10 rtl:pr-10 rtl:pl-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
-                      mode === 'view' ? 'bg-gray-50' : 'bg-white'
-                    } ${errors.duration ? 'border-red-500' : 'border-gray-300'}`}
-                    placeholder="2-3 ساعات"
-                  />
-                  <Clock className="w-5 h-5 absolute left-3 rtl:right-3 top-3.5 text-gray-400" />
-                </div>
-                {errors.duration && (
-                  <p className="text-red-500 text-sm mt-1 font-arabic">{errors.duration}</p>
-                )}
-              </div>
-
-              {/* Category */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
-                  الفئة
-                </label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  disabled={mode === 'view'}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
-                    mode === 'view' ? 'bg-gray-50' : 'bg-white border-gray-300'
-                  }`}
-                >
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Status */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
-                  حالة الخدمة
-                </label>
-                <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <input
-                    type="checkbox"
-                    name="isActive"
-                    checked={formData.isActive}
-                    onChange={handleInputChange}
-                    disabled={mode === 'view'}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700 font-arabic">
-                    الخدمة متاحة للحجز
-                  </span>
-                </div>
-              </div>
-
+            {/* Service Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
+                اسم الخدمة *
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
+                  errors.name ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="مثال: تنظيف المنزل الشامل"
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1 font-arabic">{errors.name}</p>
+              )}
             </div>
 
             {/* Description */}
@@ -294,16 +196,95 @@ const ServiceModal = ({ isOpen, onClose, service, mode, onSave, onDelete }) => {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                disabled={mode === 'view'}
-                rows={4}
+                rows={3}
                 className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
-                  mode === 'view' ? 'bg-gray-50' : 'bg-white'
-                } ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
-                placeholder="اكتب وصفاً تفصيلياً للخدمة..."
+                  errors.description ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="وصف مفصل للخدمة وما تشمله"
               />
               {errors.description && (
                 <p className="text-red-500 text-sm mt-1 font-arabic">{errors.description}</p>
               )}
+            </div>
+
+            {/* Price & Duration */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
+                  السعر (ر.س) *
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 pl-10 rtl:pr-10 rtl:pl-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.price ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="150"
+                    min="0"
+                  />
+                  <DollarSign className="w-5 h-5 absolute left-3 rtl:right-3 top-3.5 text-gray-400" />
+                </div>
+                {errors.price && (
+                  <p className="text-red-500 text-sm mt-1 font-arabic">{errors.price}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
+                  المدة (دقيقة) *
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 pl-10 rtl:pr-10 rtl:pl-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.duration ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="120"
+                    min="0"
+                  />
+                  <Clock className="w-5 h-5 absolute left-3 rtl:right-3 top-3.5 text-gray-400" />
+                </div>
+                {errors.duration && (
+                  <p className="text-red-500 text-sm mt-1 font-arabic">{errors.duration}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
+                التصنيف
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic"
+              >
+                {categories.map((category) => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Active Status */}
+            <div className="flex items-center space-x-3 rtl:space-x-reverse">
+              <input
+                type="checkbox"
+                name="active"
+                checked={formData.active}
+                onChange={handleInputChange}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label className="text-sm font-medium text-gray-700 font-arabic">
+                الخدمة نشطة ومتاحة للحجز
+              </label>
             </div>
 
             {/* Features */}
@@ -407,39 +388,20 @@ const ServiceModal = ({ isOpen, onClose, service, mode, onSave, onDelete }) => {
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t bg-gray-50 rounded-b-2xl">
-          
-          {/* Delete Button (Edit/View Mode Only) */}
-          {mode !== 'add' && (
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="px-6 py-2 text-red-600 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 font-arabic"
-            >
-              حذف الخدمة
-            </button>
-          )}
-          
-          {mode === 'add' && <div></div>}
-
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-3 rtl:space-x-reverse">
-            <button
-              onClick={onClose}
-              className="px-6 py-2 text-gray-600 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 font-arabic"
-            >
-              إلغاء
-            </button>
-            
-            {mode !== 'view' && (
-              <button
-                onClick={handleSave}
-                className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 flex items-center space-x-2 rtl:space-x-reverse font-arabic"
-              >
-                <Save className="w-4 h-4" />
-                <span>{mode === 'add' ? 'إضافة الخدمة' : 'حفظ التغييرات'}</span>
-              </button>
-            )}
-          </div>
+        <div className="flex items-center justify-end space-x-4 rtl:space-x-reverse p-6 border-t bg-gray-50">
+          <button
+            onClick={onClose}
+            className="px-6 py-2 text-gray-600 hover:text-gray-800 font-arabic"
+          >
+            إلغاء
+          </button>
+          <button
+            onClick={handleSave}
+            className="btn-primary flex items-center space-x-2 rtl:space-x-reverse"
+          >
+            <Save className="w-4 h-4" />
+            <span>حفظ</span>
+          </button>
         </div>
       </div>
     </div>

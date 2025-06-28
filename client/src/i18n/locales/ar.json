@@ -109,7 +109,7 @@
     "status": {
       "pending": "في الانتظار",
       "confirmed": "مؤكد",
-      "inProgress": "جاري التنفيذ",
+      "in-progress": "جاري التنفيذ",
       "completed": "مكتمل",
       "cancelled": "ملغي"
     },

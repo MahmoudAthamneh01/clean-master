@@ -1,69 +1,57 @@
 import { useState, useEffect } from 'react';
-import { X, User, Mail, Phone, MapPin, Save, Edit } from 'lucide-react';
+import { X, User, Save, Mail, Phone, MapPin } from 'lucide-react';
 
-const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
+const CustomerModal = ({ customer, onClose, onSave }) => {
   const [formData, setFormData] = useState({
+    id: '',
     name: '',
     email: '',
     phone: '',
-    address: {
-      street: '',
-      city: '',
-      district: '',
-      postalCode: ''
-    },
+    address: '',
+    totalBookings: 0,
+    joinDate: '',
     notes: ''
   });
 
   const [errors, setErrors] = useState({});
+  
+  // Determine mode based on customer prop
+  const mode = customer ? 'edit' : 'add';
 
   useEffect(() => {
-    if (customer && (mode === 'edit' || mode === 'view')) {
+    if (customer && mode === 'edit') {
       setFormData({
+        id: customer.id || '',
         name: customer.name || '',
         email: customer.email || '',
         phone: customer.phone || '',
-        address: customer.address || {
-          street: '',
-          city: '',
-          district: '',
-          postalCode: ''
-        },
+        address: customer.address || '',
+        totalBookings: customer.totalBookings || 0,
+        joinDate: customer.joinDate || new Date().toISOString().split('T')[0],
         notes: customer.notes || ''
       });
     } else if (mode === 'add') {
       setFormData({
+        id: `CUST${Date.now()}`,
         name: '',
         email: '',
         phone: '',
-        address: {
-          street: '',
-          city: '',
-          district: '',
-          postalCode: ''
-        },
+        address: '',
+        totalBookings: 0,
+        joinDate: new Date().toISOString().split('T')[0],
         notes: ''
       });
     }
-  }, [customer, mode, isOpen]);
+  }, [customer, mode]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setFormData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
-        }
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -77,7 +65,7 @@ const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
     const newErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'الاسم مطلوب';
+      newErrors.name = 'اسم العميل مطلوب';
     }
 
     if (!formData.email.trim()) {
@@ -88,8 +76,6 @@ const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
 
     if (!formData.phone.trim()) {
       newErrors.phone = 'رقم الهاتف مطلوب';
-    } else if (!/^(\+966|966|0)?[5-9][0-9]{8}$/.test(formData.phone)) {
-      newErrors.phone = 'رقم الهاتف غير صحيح';
     }
 
     setErrors(newErrors);
@@ -97,23 +83,15 @@ const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
   };
 
   const handleSave = () => {
-    if (mode === 'view') return;
-
     if (validateForm()) {
       const customerData = {
         ...formData,
-        id: customer?.id || Date.now(),
-        bookings: customer?.bookings || 0,
-        totalSpent: customer?.totalSpent || '0 ريال',
-        lastBooking: customer?.lastBooking || new Date().toISOString().split('T')[0]
+        totalBookings: Number(formData.totalBookings)
       };
       
-      onSave(customerData, mode);
-      onClose();
+      onSave(customerData);
     }
   };
-
-  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -122,14 +100,18 @@ const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div className="flex items-center space-x-3 rtl:space-x-reverse">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-              <User className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-green-600" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 font-arabic">
-              {mode === 'add' && 'إضافة عميل جديد'}
-              {mode === 'edit' && 'تعديل العميل'}
-              {mode === 'view' && 'تفاصيل العميل'}
-            </h2>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 font-arabic">
+                {mode === 'add' && 'عميل جديد'}
+                {mode === 'edit' && 'تعديل بيانات العميل'}
+              </h2>
+              {formData.id && (
+                <p className="text-sm text-gray-500">{formData.id}</p>
+              )}
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -143,31 +125,31 @@ const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
         <div className="p-6">
           <form className="space-y-6">
             
-            {/* Basic Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              {/* Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
-                  الاسم الكامل *
-                </label>
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
+                الاسم الكامل *
+              </label>
+              <div className="relative">
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  disabled={mode === 'view'}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
-                    mode === 'view' ? 'bg-gray-50' : 'bg-white'
-                  } ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
-                  placeholder="أدخل الاسم الكامل"
+                  className={`w-full px-4 py-3 pl-10 rtl:pr-10 rtl:pl-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
+                    errors.name ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="أحمد محمد العلي"
                 />
-                {errors.name && (
-                  <p className="text-red-500 text-sm mt-1 font-arabic">{errors.name}</p>
-                )}
+                <User className="w-5 h-5 absolute left-3 rtl:right-3 top-3.5 text-gray-400" />
               </div>
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1 font-arabic">{errors.name}</p>
+              )}
+            </div>
 
-              {/* Email */}
+            {/* Email & Phone */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
                   البريد الإلكتروني *
@@ -178,11 +160,11 @@ const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    disabled={mode === 'view'}
                     className={`w-full px-4 py-3 pl-10 rtl:pr-10 rtl:pl-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      mode === 'view' ? 'bg-gray-50' : 'bg-white'
-                    } ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
-                    placeholder="example@email.com"
+                      errors.email ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="ahmed@example.com"
+                    dir="ltr"
                   />
                   <Mail className="w-5 h-5 absolute left-3 rtl:right-3 top-3.5 text-gray-400" />
                 </div>
@@ -191,7 +173,6 @@ const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
                 )}
               </div>
 
-              {/* Phone */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
                   رقم الهاتف *
@@ -202,11 +183,11 @@ const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    disabled={mode === 'view'}
                     className={`w-full px-4 py-3 pl-10 rtl:pr-10 rtl:pl-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      mode === 'view' ? 'bg-gray-50' : 'bg-white'
-                    } ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
-                    placeholder="+966501234567"
+                      errors.phone ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="+966 5X XXX XXXX"
+                    dir="ltr"
                   />
                   <Phone className="w-5 h-5 absolute left-3 rtl:right-3 top-3.5 text-gray-400" />
                 </div>
@@ -214,70 +195,55 @@ const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
                   <p className="text-red-500 text-sm mt-1 font-arabic">{errors.phone}</p>
                 )}
               </div>
-
-              {/* City */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
-                  المدينة
-                </label>
-                <input
-                  type="text"
-                  name="address.city"
-                  value={formData.address.city}
-                  onChange={handleInputChange}
-                  disabled={mode === 'view'}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
-                    mode === 'view' ? 'bg-gray-50' : 'bg-white border-gray-300'
-                  }`}
-                  placeholder="الرياض"
-                />
-              </div>
-
             </div>
 
             {/* Address */}
-            <div className="space-y-4">
-              <label className="block text-sm font-medium text-gray-700 font-arabic">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
                 العنوان
               </label>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  name="address.district"
-                  value={formData.address.district}
+              <div className="relative">
+                <textarea
+                  name="address"
+                  value={formData.address}
                   onChange={handleInputChange}
-                  disabled={mode === 'view'}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
-                    mode === 'view' ? 'bg-gray-50' : 'bg-white border-gray-300'
-                  }`}
-                  placeholder="الحي"
+                  rows={3}
+                  className="w-full px-4 py-3 pl-10 rtl:pr-10 rtl:pl-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic"
+                  placeholder="العنوان التفصيلي"
                 />
-                
+                <MapPin className="w-5 h-5 absolute left-3 rtl:right-3 top-3.5 text-gray-400" />
+              </div>
+            </div>
+
+            {/* Join Date & Total Bookings */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
+                  تاريخ الانضمام
+                </label>
                 <input
-                  type="text"
-                  name="address.postalCode"
-                  value={formData.address.postalCode}
+                  type="date"
+                  name="joinDate"
+                  value={formData.joinDate}
                   onChange={handleInputChange}
-                  disabled={mode === 'view'}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    mode === 'view' ? 'bg-gray-50' : 'bg-white border-gray-300'
-                  }`}
-                  placeholder="الرمز البريدي"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              
-              <input
-                type="text"
-                name="address.street"
-                value={formData.address.street}
-                onChange={handleInputChange}
-                disabled={mode === 'view'}
-                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
-                  mode === 'view' ? 'bg-gray-50' : 'bg-white border-gray-300'
-                }`}
-                placeholder="الشارع والعنوان التفصيلي"
-              />
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-arabic">
+                  إجمالي الحجوزات
+                </label>
+                <input
+                  type="number"
+                  name="totalBookings"
+                  value={formData.totalBookings}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="0"
+                  readOnly={mode === 'edit'}
+                />
+              </div>
             </div>
 
             {/* Notes */}
@@ -289,70 +255,29 @@ const CustomerModal = ({ isOpen, onClose, customer, mode, onSave }) => {
                 name="notes"
                 value={formData.notes}
                 onChange={handleInputChange}
-                disabled={mode === 'view'}
                 rows={3}
-                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic ${
-                  mode === 'view' ? 'bg-gray-50' : 'bg-white border-gray-300'
-                }`}
-                placeholder="أي ملاحظات إضافية..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-arabic"
+                placeholder="أي ملاحظات حول العميل"
               />
             </div>
-
-            {/* Customer Stats (View Mode Only) */}
-            {mode === 'view' && customer && (
-              <div className="bg-gray-50 rounded-xl p-4">
-                <h3 className="font-semibold text-gray-900 mb-3 font-arabic">إحصائيات العميل</h3>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="text-2xl font-bold text-blue-600">{customer.bookings}</p>
-                    <p className="text-sm text-gray-600 font-arabic">حجز</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-green-600">{customer.totalSpent}</p>
-                    <p className="text-sm text-gray-600 font-arabic">إجمالي الإنفاق</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-purple-600">{customer.lastBooking}</p>
-                    <p className="text-sm text-gray-600 font-arabic">آخر حجز</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
           </form>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end space-x-3 rtl:space-x-reverse p-6 border-t bg-gray-50 rounded-b-2xl">
+        <div className="flex items-center justify-end space-x-4 rtl:space-x-reverse p-6 border-t bg-gray-50">
           <button
             onClick={onClose}
-            className="px-6 py-2 text-gray-600 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 font-arabic"
+            className="px-6 py-2 text-gray-600 hover:text-gray-800 font-arabic"
           >
             إلغاء
           </button>
-          
-          {mode !== 'view' && (
-            <button
-              onClick={handleSave}
-              className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 flex items-center space-x-2 rtl:space-x-reverse font-arabic"
-            >
-              <Save className="w-4 h-4" />
-              <span>{mode === 'add' ? 'إضافة' : 'حفظ'}</span>
-            </button>
-          )}
-          
-          {mode === 'view' && (
-            <button
-              onClick={() => {
-                // Switch to edit mode - this would be handled by parent component
-                onClose();
-              }}
-              className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 flex items-center space-x-2 rtl:space-x-reverse font-arabic"
-            >
-              <Edit className="w-4 h-4" />
-              <span>تعديل</span>
-            </button>
-          )}
+          <button
+            onClick={handleSave}
+            className="btn-primary flex items-center space-x-2 rtl:space-x-reverse"
+          >
+            <Save className="w-4 h-4" />
+            <span>حفظ</span>
+          </button>
         </div>
       </div>
     </div>
