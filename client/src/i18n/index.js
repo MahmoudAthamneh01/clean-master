@@ -30,7 +30,19 @@ i18n
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage']
-    }
+    },
+    
+    // Force reload translations
+    load: 'languageOnly',
+    cleanCode: true,
+    
+    // Debug in development
+    debug: false
   });
+
+// Ensure Arabic is loaded on startup
+if (i18n.language !== 'ar') {
+  i18n.changeLanguage('ar');
+}
 
 export default i18n; 

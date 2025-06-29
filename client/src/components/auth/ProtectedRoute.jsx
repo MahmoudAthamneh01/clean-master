@@ -6,19 +6,22 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
+    const token = localStorage.getItem('cleanmaster_token');
+    const userData = localStorage.getItem('cleanmaster_user');
     
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
+        console.log('✅ User loaded from localStorage:', parsedUser);
       } catch (error) {
         console.error('Error parsing user data:', error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem('cleanmaster_token');
+        localStorage.removeItem('cleanmaster_user');
         setUser(null);
       }
+    } else {
+      console.log('❌ No user data found in localStorage');
     }
     
     setLoading(false);
@@ -33,13 +36,16 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   }
 
   if (!user) {
+    console.log('🔄 Redirecting to login - no user');
     return <Navigate to="/login" replace />;
   }
 
   if (requireAdmin && user.role !== 'admin') {
+    console.log('🚫 Access denied - not admin:', user.role);
     return <Navigate to="/" replace />;
   }
 
+  console.log('✅ Access granted for user:', user.name, 'Role:', user.role);
   return children;
 };
 

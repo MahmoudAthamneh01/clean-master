@@ -24,6 +24,9 @@ import BookingModal from '../../components/admin/BookingModal';
 import ServiceModal from '../../components/admin/ServiceModal';
 import CustomerModal from '../../components/admin/CustomerModal';
 
+// Import API
+import api from '../../utils/api';
+
 const AdminDashboard = () => {
   const { t } = useTranslation();
   const location = useLocation();
@@ -58,76 +61,33 @@ const AdminDashboard = () => {
     { id: 'settings', label: t('admin.settings'), icon: Settings, path: '/admin/settings' }
   ];
 
-  // Sample data - replace with actual API calls
+  // Load data from API
   useEffect(() => {
-    setTimeout(() => {
-      setBookings([
-        {
-          id: 1,
-          customer: 'أحمد محمد',
-          service: 'تنظيف المنزل',
-          date: '2024-01-15',
-          time: '10:00',
-          status: 'confirmed',
-          amount: 250
-        },
-        {
-          id: 2,
-          customer: 'فاطمة علي',
-          service: 'تنظيف المكتب',
-          date: '2024-01-15',
-          time: '14:00',
-          status: 'pending',
-          amount: 400
-        },
-        {
-          id: 3,
-          customer: 'محمد خالد',
-          service: 'التنظيف العميق',
-          date: '2024-01-16',
-          time: '09:00',
-          status: 'completed',
-          amount: 500
-        }
-      ]);
-
-      setServices([
-        {
-          id: 1,
-          name: 'تنظيف المنازل',
-          price: 250,
-          duration: 120,
-          active: true
-        },
-        {
-          id: 2,
-          name: 'تنظيف المكاتب',
-          price: 400,
-          duration: 180,
-          active: true
-        }
-      ]);
-
-      setCustomers([
-        {
-          id: 1,
-          name: 'أحمد محمد',
-          email: 'ahmed@example.com',
-          phone: '+966501234567',
-          totalBookings: 5
-        },
-        {
-          id: 2,
-          name: 'فاطمة علي',
-          email: 'fatima@example.com',
-          phone: '+966501234568',
-          totalBookings: 3
-        }
-      ]);
-
-      setIsLoading(false);
-    }, 1000);
+    loadData();
   }, []);
+
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      // Load all data in parallel
+      const [statsResult, bookingsResult, servicesResult, customersResult] = await Promise.all([
+        api.getStats(),
+        api.getBookings(),
+        api.getServices(),
+        api.getCustomers()
+      ]);
+
+      if (statsResult.success) setStats(statsResult.data);
+      if (bookingsResult.success) setBookings(bookingsResult.data);
+      if (servicesResult.success) setServices(servicesResult.data);
+      if (customersResult.success) setCustomers(customersResult.data);
+
+    } catch (error) {
+      console.error('خطأ في تحميل البيانات:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Get current tab from URL
   useEffect(() => {
@@ -161,66 +121,117 @@ const AdminDashboard = () => {
   };
 
   // Handle booking save
-  const handleBookingSave = (bookingData) => {
-    if (selectedItem) {
-      // Update existing booking
-      setBookings(prev => prev.map(booking => 
-        booking.id === selectedItem.id ? { ...bookingData, id: selectedItem.id } : booking
-      ));
-    } else {
-      // Add new booking
-      setBookings(prev => [...prev, { ...bookingData, id: Date.now() }]);
+  const handleBookingSave = async (bookingData) => {
+    try {
+      if (selectedItem) {
+        // Update existing booking
+        const result = await api.updateBooking(selectedItem.id, bookingData);
+        if (result.success) {
+          setBookings(prev => prev.map(booking => 
+            booking.id === selectedItem.id ? { ...bookingData, id: selectedItem.id } : booking
+          ));
+        }
+      } else {
+        // Add new booking
+        const result = await api.createBooking(bookingData);
+        if (result.success) {
+          setBookings(prev => [...prev, result.data]);
+        }
+      }
+    } catch (error) {
+      console.error('خطأ في حفظ الحجز:', error);
     }
     setShowBookingModal(false);
     setSelectedItem(null);
   };
 
   // Handle service save
-  const handleServiceSave = (serviceData) => {
-    if (selectedItem) {
-      // Update existing service
-      setServices(prev => prev.map(service => 
-        service.id === selectedItem.id ? { ...serviceData, id: selectedItem.id } : service
-      ));
-    } else {
-      // Add new service
-      setServices(prev => [...prev, { ...serviceData, id: Date.now() }]);
+  const handleServiceSave = async (serviceData) => {
+    try {
+      if (selectedItem) {
+        // Update existing service
+        const result = await api.updateService(selectedItem.id, serviceData);
+        if (result.success) {
+          setServices(prev => prev.map(service => 
+            service.id === selectedItem.id ? { ...serviceData, id: selectedItem.id } : service
+          ));
+        }
+      } else {
+        // Add new service
+        const result = await api.createService(serviceData);
+        if (result.success) {
+          setServices(prev => [...prev, result.data]);
+        }
+      }
+    } catch (error) {
+      console.error('خطأ في حفظ الخدمة:', error);
     }
     setShowServiceModal(false);
     setSelectedItem(null);
   };
 
   // Handle customer save
-  const handleCustomerSave = (customerData) => {
-    if (selectedItem) {
-      // Update existing customer
-      setCustomers(prev => prev.map(customer => 
-        customer.id === selectedItem.id ? { ...customerData, id: selectedItem.id } : customer
-      ));
-    } else {
-      // Add new customer
-      setCustomers(prev => [...prev, { ...customerData, id: Date.now() }]);
+  const handleCustomerSave = async (customerData) => {
+    try {
+      if (selectedItem) {
+        // Update existing customer
+        const result = await api.updateCustomer(selectedItem.id, customerData);
+        if (result.success) {
+          setCustomers(prev => prev.map(customer => 
+            customer.id === selectedItem.id ? { ...customerData, id: selectedItem.id } : customer
+          ));
+        }
+      } else {
+        // Add new customer
+        const result = await api.createCustomer(customerData);
+        if (result.success) {
+          setCustomers(prev => [...prev, result.data]);
+        }
+      }
+    } catch (error) {
+      console.error('خطأ في حفظ العميل:', error);
     }
     setShowCustomerModal(false);
     setSelectedItem(null);
   };
 
-  // Handle delete functions
-  const handleDeleteBooking = (bookingId) => {
+  // Delete handlers
+  const handleDeleteBooking = async (bookingId) => {
     if (window.confirm('هل أنت متأكد من حذف هذا الحجز؟')) {
-      setBookings(prev => prev.filter(booking => booking.id !== bookingId));
+      try {
+        const result = await api.deleteBooking(bookingId);
+        if (result.success) {
+          setBookings(prev => prev.filter(booking => booking.id !== bookingId));
+        }
+      } catch (error) {
+        console.error('خطأ في حذف الحجز:', error);
+      }
     }
   };
 
-  const handleDeleteService = (serviceId) => {
+  const handleDeleteService = async (serviceId) => {
     if (window.confirm('هل أنت متأكد من حذف هذه الخدمة؟')) {
-      setServices(prev => prev.filter(service => service.id !== serviceId));
+      try {
+        const result = await api.deleteService(serviceId);
+        if (result.success) {
+          setServices(prev => prev.filter(service => service.id !== serviceId));
+        }
+      } catch (error) {
+        console.error('خطأ في حذف الخدمة:', error);
+      }
     }
   };
 
-  const handleDeleteCustomer = (customerId) => {
+  const handleDeleteCustomer = async (customerId) => {
     if (window.confirm('هل أنت متأكد من حذف هذا العميل؟')) {
-      setCustomers(prev => prev.filter(customer => customer.id !== customerId));
+      try {
+        const result = await api.deleteCustomer(customerId);
+        if (result.success) {
+          setCustomers(prev => prev.filter(customer => customer.id !== customerId));
+        }
+      } catch (error) {
+        console.error('خطأ في حذف العميل:', error);
+      }
     }
   };
 

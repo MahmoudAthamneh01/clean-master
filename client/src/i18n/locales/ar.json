@@ -77,19 +77,36 @@
   },
   "auth": {
     "login": "تسجيل الدخول",
+    "sign_in": "دخول",
     "signup": "إنشاء حساب جديد",
+    "sign_up": "إنشاء حساب",
+    "welcome_back": "مرحباً بعودتك",
+    "sign_in_to_continue": "سجل دخولك للمتابعة",
     "email": "البريد الإلكتروني",
+    "email_placeholder": "أدخل بريدك الإلكتروني",
     "password": "كلمة المرور",
+    "password_placeholder": "أدخل كلمة المرور",
     "confirmPassword": "تأكيد كلمة المرور",
     "name": "الاسم الكامل",
     "phone": "رقم الهاتف",
     "loginButton": "دخول",
     "signupButton": "إنشاء حساب",
+    "remember_me": "تذكرني",
+    "forgot_password": "نسيت كلمة المرور؟",
     "forgotPassword": "نسيت كلمة المرور؟",
+    "no_account": "ليس لديك حساب؟",
     "dontHaveAccount": "ليس لديك حساب؟",
     "alreadyHaveAccount": "لديك حساب بالفعل؟",
     "resetPassword": "إعادة تعيين كلمة المرور",
     "backToLogin": "العودة لتسجيل الدخول"
+  },
+  "brand": {
+    "name": "كلين ماستر",
+    "tagline": "خدمات التنظيف الذكية"
+  },
+  "header": {
+    "location": "الرياض، المملكة العربية السعودية",
+    "hours": "24/7 خدمة على مدار الساعة"
   },
   "profile": {
     "title": "الملف الشخصي",
@@ -119,10 +136,10 @@
     "rate": "تقييم الخدمة"
   },
   "admin": {
-    "dashboard": "لوحة التحكم",
+    "dashboard": "الرئيسية",
     "bookings": "الحجوزات",
     "services": "الخدمات",
-    "users": "المستخدمون",
+    "users": "العملاء",
     "staff": "الموظفون",
     "reports": "التقارير",
     "settings": "الإعدادات",
