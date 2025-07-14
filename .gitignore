@@ -83,4 +83,17 @@ temp/
 *.ntvs*
 *.njsproj
 *.sln
-*.sw? 
+*.sw?
+
+# PHP specific
+composer.phar
+/vendor/
+*.db
+*.sqlite
+*.sqlite3
+
+# Database dumps
+*.sql
+
+# Temporary files for development
+/tmp/ 
